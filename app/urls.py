@@ -6,7 +6,8 @@ from .views import (
     FoodView,
     TableView,
     OrderingView,
-    AllOrdersView,
+#    AllOrdersView,
+    ChangeOrderView
 )
 
 router = DefaultRouter()
@@ -15,7 +16,8 @@ router.register(r"tables", TableView)
 router.register(r"employees", EmployeeView),
 
 urlpatterns = [
-    path('all/orders/', AllOrdersView.as_view()),
+    #path('all/orders/', AllOrdersView.as_view()),
     path('order/', OrderingView.as_view()),
+    path('change/order/<str:pk>/',ChangeOrderView.as_view()),
     path("", include(router.urls)),
 ]

@@ -24,9 +24,8 @@ from .models import (
 
 # Logging
 import logging
-from .utils import setup_logging
+logger = logging.getLogger('django')
 
-setup_logging()
 
 class FoodView(viewsets.ModelViewSet):
     serializer_class = FoodSerializer
@@ -53,9 +52,9 @@ class OrderingView(APIView):
     
     def post(self, request):
         data = request.data
-
+        logger.info('getting data from the request')
         foods = data.get("items", [])
-        logging.getLogger('info').info('Getting data from the request: %s', data )
+        
         table_number = data.get("table_number")
         table = Table.objects.get(id=table_number)
         
@@ -65,6 +64,7 @@ class OrderingView(APIView):
             name=f"orderin_{table_number}",
             ordered_time=timezone.now(),
         )
+        logger.info('creating new order')
         cost = 0
 
         for food_data in foods:
@@ -74,7 +74,7 @@ class OrderingView(APIView):
 
             OrderedFood.objects.create(order=order, food=food, quantity=quantity)
             
-        logging.getLogger('info').info('Order created with total cost %s', cost )
+            logger.info('Order created with total cost %s', cost )
 
 
         order.cost = cost
@@ -85,10 +85,51 @@ class OrderingView(APIView):
 
 
 class ChangeOrderView(APIView):
-    def put(self, request):
-        pass
-
-
+    
+    @extend_schema(
+        request=OrderRequestSerializer,
+        responses={201: OrderResponseSerializer},
+    )
+    
+    def patch(self, request, pk):
+        try:
+            order = Ordering.objects.get(id=pk)
+        except Ordering.DoesNotExist:
+            return Response({'msg':'Order does not found'})
+        ordered_foods = OrderedFood.objects.filter(order=order)
+        
+        data = request.data
+        table_number = data.get('table_number')
+        items = data.get('items', [])
+        
+        table = Table.objects.get(id=table_number)
+        logger.info('getting table number')
+        try:
+            table = Table.objects.get(id=table_number)
+        except Table.DoesNotExist:
+            return Response({'msg':'Table does not found'})
+        
+        order.table_number = table
+        order.ordered_time = timezone.now()
+        order.name = order.name
+        # Deleting old order
+        for ordered_food in ordered_foods:
+            ordered_food.delete()
+        
+        cost = 0 
+        #Changing order
+        for food_data in items:
+            food = Food.objects.get(id=food_data['food_id'])
+            print(food_data['food_id'])
+            quantity = food_data['quantity']
+            cost += food.cost * quantity
+            OrderedFood.objects.create(order=order,food=food,quantity=quantity)
+        order.cost = cost
+        order.save()
+        return Response({'msg':'Order is changed'})
+            
+        
+        '''
 class AllOrdersView(APIView):
     
     @extend_schema(
@@ -127,3 +168,4 @@ class AllOrdersView(APIView):
                     }
                 )
         return Response(data, status=status.HTTP_200_OK)
+'''
