@@ -85,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
+
 ASGI_APPLICATION = "config.asgi.application"
 
 
@@ -157,11 +157,13 @@ CURRENT_DATE = datetime.datetime.now().strftime("%Y-%m-%d")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    
     "formatters": {
         "standard": {
             "format": "%(asctime)s - %(levelname)s - %(message)s",
         },
     },
+    
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",

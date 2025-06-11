@@ -25,10 +25,16 @@ class Table(models.Model):
     
 
 class Ordering(models.Model):
+    STATUS_CHOICES = (
+        ('in_progress','in_progress'),
+        ('done','done'),
+        ('delivered','delivered')
+    )
     table_number = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='orders')
     name = models.CharField(max_length=100, blank=True, null=True)
     cost = models.PositiveIntegerField(default=0)
-    ordered_time = models.DateTimeField(blank=True, null=True)    
+    ordered_time = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(choices=STATUS_CHOICES,default='in_progress',max_length=50)    
 
 
     def __str__(self):
