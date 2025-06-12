@@ -6,9 +6,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class OrderConsumer(AsyncWebsocketConsumer):
+    
     async def connect(self):
         self.groupname = 'orders'
-        from .models import OrderedFood, Ordering
         await self.channel_layer.group_add(
             self.groupname,
             self.channel_name
@@ -18,7 +18,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({'orders':data}))
         
-        
+    
     @sync_to_async
     def get_orders(self):
         from .models import OrderedFood, Ordering
@@ -51,11 +51,11 @@ class OrderConsumer(AsyncWebsocketConsumer):
                 "foods": foods,
             })
         return data
-    
+    # function for getting orders with new ones
     async def send_new_order(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({'orders': data}))
-        
+    # function for getting orders with updates
     async def send_order_updates(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({'orders':data}))

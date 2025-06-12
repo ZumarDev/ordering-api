@@ -4,7 +4,7 @@ from .models import Ordering
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-
+#signal for new order
 @receiver(post_save, sender=Ordering)
 def send_order_created(sender, instance, created, **kwargs):
     if created:
@@ -17,7 +17,8 @@ def send_order_created(sender, instance, created, **kwargs):
             "message": "new_order"
             },
         )
-
+        
+# signal for order updates
 @receiver(post_save, sender=Ordering)
 def send_order_updates(sender, instance, created, **kwargs):
     if created == False:
