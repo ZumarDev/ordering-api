@@ -5,8 +5,9 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 #signal for new order
+
 @receiver(post_save, sender=Ordering)
-def send_order_created(sender, instance, created, **kwargs):
+def get_new_orders(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
 
@@ -14,13 +15,14 @@ def send_order_created(sender, instance, created, **kwargs):
             "orders",
             {
             "type": "send_new_order", 
-            "message": "new_order"
+            "message": "new order"
             },
         )
         
 # signal for order updates
+
 @receiver(post_save, sender=Ordering)
-def send_order_updates(sender, instance, created, **kwargs):
+def get_updates_orders(sender, instance, created, **kwargs):
     if created == False:
         channel_layer = get_channel_layer()
         
@@ -31,3 +33,36 @@ def send_order_updates(sender, instance, created, **kwargs):
                 "message": "updated order",
             },
         )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

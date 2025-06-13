@@ -8,11 +8,11 @@ from rest_framework import status
 from .serializers import (
     EmployeeSerializer,
     FoodSerializer,
-    OrderOutputSerializer,
     OrderRequestSerializer,
     OrderResponseSerializer,
     TableSerializer,
-    OrderItemSerializer
+    OrderSerializer
+    
 )
 from .models import (
     Employee,
@@ -61,7 +61,7 @@ class OrderingView(APIView):
 
         order = Ordering.objects.create(
             table_number=table,
-            name=f"orderin_{table_number}",
+            name=f"order_in_table_{table_number}",
             ordered_time=timezone.now(),
         )
         logger.info('creating new order')
@@ -117,7 +117,7 @@ class ChangeOrderView(APIView):
             ordered_food.delete()
         
         cost = 0 
-        #Changing order
+        # Changing order
         for food_data in items:
             food = Food.objects.get(id=food_data['food_id'])
             print(food_data['food_id'])
@@ -127,45 +127,12 @@ class ChangeOrderView(APIView):
         order.cost = cost
         order.save()
         return Response({'msg':'Order is changed'})
-            
-        
-        '''
-class AllOrdersView(APIView):
+
+
+class GetAllOrders(APIView):
     
-    @extend_schema(
-        responses={200: OrderOutputSerializer(many=True)},
-    )
     def get(self, request):
-
         orders = Ordering.objects.all()
-        
-        data = []
-        for order in orders:
-            ordered_foods = OrderedFood.objects.filter(order=order)
-            foods = []
-            # Deletion
-            deletion_time = order.ordered_time + timedelta(days=1)
-            if deletion_time < timezone.now():
-                order.delete()                
-            else:
-                for food in ordered_foods:
-                    foods.append(
-                        {
-                            "id": food.food.id,
-                            "name": food.food.name,
-                            "cost": food.food.cost,
-                            "quantity": food.quantity,
-                        }
-                    )
-
-                data.append(
-                    {
-                        "id": order.id,
-                        "table_number": order.table_number.id,
-                        "total_cost": order.cost,
-                        "ordered_time": order.ordered_time.strftime("%d-%m-%Y, %H:%M:%S"),
-                        "foods": foods,
-                    }
-                )
-        return Response(data, status=status.HTTP_200_OK)
-'''
+        serializer = OrderSerializer(orders ,many=True).data
+        return Response({'data': serializer})
+    

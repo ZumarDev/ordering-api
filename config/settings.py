@@ -40,7 +40,8 @@ REST_FRAMEWORK = {
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:300",
+    "http://localhost:5173",
+    "http://localhost:8000",
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -52,7 +53,7 @@ SPECTACULAR_SETTINGS = {
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -136,6 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/media/"
 
+
+CELERY_BROKER_URl = 'redis://localhost:6379/0'
 
 # Logging
 import os

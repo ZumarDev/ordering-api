@@ -30,7 +30,7 @@ class Ordering(models.Model):
         ('done','done'),
         ('delivered','delivered')
     )
-    table_number = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='orders')
+    table_number = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='table')
     name = models.CharField(max_length=100, blank=True, null=True)
     cost = models.PositiveIntegerField(default=0)
     ordered_time = models.DateTimeField(blank=True, null=True)
@@ -38,12 +38,13 @@ class Ordering(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return self.name 
     
 class OrderedFood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE, related_name='ordered_foods',blank=True, null=True)
     order = models.ForeignKey(Ordering, on_delete=models.CASCADE, related_name='ordered_foods')
-    quantity = models.PositiveSmallIntegerField() 
+    quantity = models.PositiveSmallIntegerField()
+    
 
     
     
