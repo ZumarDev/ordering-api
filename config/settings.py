@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "channels",
     "corsheaders",
+    "django_celery_beat",
     "app",
 ]
 
@@ -63,6 +64,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+ASGI_APPLICATION = "config.asgi.application"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -78,8 +81,6 @@ TEMPLATES = [
     },
 ]
 
-
-ASGI_APPLICATION = "config.asgi.application"
 
 
 # Database
@@ -138,7 +139,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 
 
-CELERY_BROKER_URl = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
 # Logging
 import os
@@ -180,7 +183,7 @@ LOGGING = {
             "filename": os.path.join(BASE_LOG_FOLDER, f"error_{CURRENT_DATE}.log"),
             "when": "D",
             "interval": 1,
-            "backupCount": 7,
+            "backupCount": 3,
             "level": "ERROR",
             "encoding": "utf-8",
         },
@@ -188,7 +191,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file_info", "file_error"],
-            "level": "ERROR",
+            "level": "INFO",
             "propagate": True,
         }
     },

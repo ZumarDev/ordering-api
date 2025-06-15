@@ -47,6 +47,8 @@ class FoodSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     cost = serializers.IntegerField()
+    image = serializers.ImageField()
+    time_to_prepare = serializers.CharField()
 
 
 class OrderSerializer(serializers.ModelSerializer):

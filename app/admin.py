@@ -3,7 +3,7 @@ from .models import Food, Table, Employee, Ordering, OrderedFood
 
 
 class FoodAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'cost')
+    list_display = ('id','name', 'cost', 'time_to_prepare')
     search_fields = ('name',)
     
 class OrderedFoodAdmin(admin.ModelAdmin):
@@ -11,7 +11,7 @@ class OrderedFoodAdmin(admin.ModelAdmin):
     list_filter = ('quantity',)
     
 class OrderingAdmin(admin.ModelAdmin):
-    list_display = ('id','table_number', 'name')
+    list_display = ('id', 'status', 'name', 'cost')
     search_fields = ('name',)
     list_filter = ('table_number',)
 
