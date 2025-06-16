@@ -6,11 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import (
-    EmployeeSerializer,
     FoodSerializer,
     OrderRequestSerializer,
     OrderResponseSerializer,
-    TableSerializer,
     OrderSerializer,
 )
 from .models import (
@@ -23,7 +21,6 @@ from .models import (
 
 # Logging
 import logging
-
 logger = logging.getLogger("django")
 
 

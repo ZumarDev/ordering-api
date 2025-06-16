@@ -6,7 +6,6 @@ from asgiref.sync import async_to_sync
 
 # signal for new order
 
-
 @receiver(post_save, sender=Ordering)
 def get_new_orders(sender, instance, created, **kwargs):
     if created:
@@ -19,7 +18,6 @@ def get_new_orders(sender, instance, created, **kwargs):
 
 
 # signal for order updates
-
 
 @receiver(post_save, sender=Ordering)
 def get_updates_orders(sender, instance, created, **kwargs):
@@ -42,7 +40,7 @@ def get_updates_orders(sender, instance, created, **kwargs):
             },
         )
 
-
+# signal after order deleted
 @receiver(post_delete, sender=Ordering)
 def get_order_after_deleting(sender, instance, **kwargs):
 

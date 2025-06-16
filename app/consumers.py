@@ -4,7 +4,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class OrderConsumer(AsyncWebsocketConsumer):
-
     async def connect(self):
         self.groupname = "orders"
         await self.channel_layer.group_add(self.groupname, self.channel_name)
@@ -58,16 +57,17 @@ class OrderConsumer(AsyncWebsocketConsumer):
             )
         return data
 
-    # function for getting orders with new ones
+    # function for getting new orders
     async def send_new_order(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({"orders": data}))
 
-    # function for getting orders with updates
+    # function for getting orders after changing
     async def send_order_updates(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({"orders": data}))
-
+        
+    # function for getting orders after deleting
     async def get_order_after_deleting(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({"orders": data}))
@@ -80,7 +80,6 @@ class OrderConsumer(AsyncWebsocketConsumer):
 
 
 class ReadyOrdersConsumer(AsyncWebsocketConsumer):
-
     async def connect(self):
         self.groupname = "ready_orders"
         await self.channel_layer.group_add(self.groupname, self.channel_name)
@@ -130,7 +129,8 @@ class ReadyOrdersConsumer(AsyncWebsocketConsumer):
             )
 
         return data
-
+    
+    # function for getting orders after changing
     async def send_order_updates(self, event):
         data = await self.get_ready_orders()
         await self.send(text_data=json.dumps({"orders": data}))
