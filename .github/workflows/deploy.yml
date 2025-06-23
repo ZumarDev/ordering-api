@@ -28,6 +28,5 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          su - zumar
           cd ~/projects/ordering-api
           ./deploy/deploy.sh

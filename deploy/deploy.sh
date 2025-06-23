@@ -1,5 +1,4 @@
 #!/bin/bash
-su - zumar
 cd ~/projects/ordering-api
 
 # Venv
