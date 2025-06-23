@@ -1,49 +1,55 @@
-import datetime
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+from django.utils.timezone import datetime
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG",) == "True"
-
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
-
 INSTALLED_APPS = [
+    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # 3rd party
     "rest_framework",
     "drf_spectacular",
     "channels",
     "corsheaders",
     "django_celery_beat",
+
+    # Local apps
     "app",
 ]
+
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_URL", "redis://localhost:6379/1")],
+        },
+    },
+}
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:8000",
-]
+
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:5173").split(",")
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "My API",
@@ -88,10 +94,15 @@ TEMPLATES = [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
+        "USER": os.getenv("DB_USER", ""),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", ""),
     }
 }
+
 
 
 # Password validation
@@ -118,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tashkent"
 
 USE_I18N = True
 
@@ -134,23 +145,26 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
-# Logging
-import os
-import datetime
 
 BASE_LOG_FOLDER = os.path.join(BASE_DIR, "logs")
 os.makedirs(BASE_LOG_FOLDER, exist_ok=True)
 
-CURRENT_DATE = datetime.datetime.now().strftime("%Y-%m-%d")
 
 LOGGING = {
     "version": 1,
@@ -170,7 +184,7 @@ LOGGING = {
         "file_info": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "formatter": "standard",
-            "filename": os.path.join(BASE_LOG_FOLDER, f"info_{CURRENT_DATE}.log"),
+            "filename": os.path.join(BASE_LOG_FOLDER, "info.log"),
             "when": "D",
             "interval": 1,
             "backupCount": 3,
@@ -180,7 +194,7 @@ LOGGING = {
         "file_error": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "formatter": "standard",
-            "filename": os.path.join(BASE_LOG_FOLDER, f"error_{CURRENT_DATE}.log"),
+            "filename": os.path.join(BASE_LOG_FOLDER, "error.log"),
             "when": "D",
             "interval": 1,
             "backupCount": 3,

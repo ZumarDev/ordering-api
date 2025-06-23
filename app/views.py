@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from drf_spectacular.utils import extend_schema
 from django.utils import timezone
 from rest_framework import viewsets

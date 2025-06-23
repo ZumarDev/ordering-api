@@ -40,7 +40,7 @@ class Ordering(models.Model):
 
 
     def __str__(self):
-        return self.name 
+        return f"table {self.table_number.table_number} {self.name if self.name else ''}" 
     
 class OrderedFood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE, related_name='ordered_foods',blank=True, null=True)
