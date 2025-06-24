@@ -1,0 +1,13 @@
+[Unit]
+Description=Ordering API
+After=network.target
+
+[Service]
+User=zumar
+WorkingDirectory=/home/zumar/projects/ordering-api
+ExecStart=/home/zumar/projects/ordering-api/.venv/bin/gunicorn config.wsgi:application --bind 127.0.0.1:8686
+EnvironmentFile=/home/zumar/projects/ordering-api/.env
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
