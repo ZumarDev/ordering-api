@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from config import settings
 from .views import (
     OrderingView,
     ChangeOrderView,
@@ -13,6 +15,7 @@ urlpatterns = [
     path('all/orders/', GetAllOrders.as_view()), 
     path('delete/order/<str:pk>/', DeleteOrderView.as_view()),
     path('foods/', MenuView.as_view()),
-]
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
