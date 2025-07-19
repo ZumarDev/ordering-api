@@ -22,16 +22,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # 3rd party
     "rest_framework",
     "drf_spectacular",
     "channels",
     "corsheaders",
     "django_celery_beat",
-
     # Local apps
     "app",
+    "user",
 ]
 
 
@@ -48,8 +47,11 @@ CHANNEL_LAYERS = {
     },
 }
 
+AUTH_USER_MODEL = 'user.User'
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:5173").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:5173"
+).split(",")
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "My API",
@@ -88,7 +90,6 @@ TEMPLATES = [
 ]
 
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -102,7 +103,6 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT", ""),
     }
 }
-
 
 
 # Password validation
@@ -140,7 +140,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 
-
 STATIC_URL = "/api/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
@@ -159,7 +158,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
 
 
 BASE_LOG_FOLDER = os.path.join(BASE_DIR, "logs")
@@ -169,13 +168,11 @@ os.makedirs(BASE_LOG_FOLDER, exist_ok=True)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    
     "formatters": {
         "standard": {
             "format": "%(asctime)s - %(levelname)s - %(message)s",
         },
     },
-    
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",

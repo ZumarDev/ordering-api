@@ -1,5 +1,7 @@
 from django.db import models
 
+IN_PROGERESS, DONE, DELIVERED = "IN_PROGERESS", "DONE", "DELIVERED"
+
 
 class Food(models.Model):
     name = models.CharField(max_length=100)
@@ -11,46 +13,25 @@ class Food(models.Model):
         return self.name
 
 
-class Employee(models.Model):
-    full_name = models.CharField(max_length=100)
-    age = models.PositiveSmallIntegerField()
-    salary = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.full_name
-
-
-class Table(models.Model):
-    capacity = models.PositiveSmallIntegerField()
-    employee = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, related_name="tables", blank=True, null=True
-    )
-    table_number = models.PositiveSmallIntegerField()
-
-    def __str__(self):
-        return f"{self.id}"
-
-
-class Ordering(models.Model):
+class Orders(models.Model):
     STATUS_CHOICES = (
-        ("in_progress", "in_progress"),
-        ("done", "done"),
-        ("delivered", "delivered"),
-    )
-    table_number = models.ForeignKey(
-        Table, on_delete=models.CASCADE, related_name="table"
+        (IN_PROGERESS, IN_PROGERESS),
+        (DONE, DONE),
+        (DELIVERED, DELIVERED),
     )
     name = models.CharField(max_length=100, blank=True, null=True)
     cost = models.PositiveIntegerField(default=0)
     ordered_time = models.DateTimeField(blank=True, null=True)
+    location = models.CharField(max_length=255)
     status = models.CharField(
         choices=STATUS_CHOICES, default="in_progress", max_length=50
     )
 
+    class Meta:
+        verbose_name = "Orders"
+
     def __str__(self):
-        return (
-            f"table {self.table_number.table_number} {self.name if self.name else ''}"
-        )
+        return f"{self.name if self.name else ''}"
 
 
 class OrderedFood(models.Model):
@@ -62,7 +43,7 @@ class OrderedFood(models.Model):
         null=True,
     )
     order = models.ForeignKey(
-        Ordering, on_delete=models.CASCADE, related_name="ordered_foods"
+        Orders, on_delete=models.CASCADE, related_name="ordered_foods"
     )
     quantity = models.PositiveSmallIntegerField()
 

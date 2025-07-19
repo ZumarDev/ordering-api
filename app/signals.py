@@ -1,12 +1,12 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import Ordering
+from .models import Orders
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 # signal for new order
 
-@receiver(post_save, sender=Ordering)
+@receiver(post_save, sender=Orders)
 def get_new_orders(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
@@ -19,7 +19,7 @@ def get_new_orders(sender, instance, created, **kwargs):
 
 # signal for order updates
 
-@receiver(post_save, sender=Ordering)
+@receiver(post_save, sender=Orders)
 def get_updates_orders(sender, instance, created, **kwargs):
     if created == False:
         channel_layer = get_channel_layer()
@@ -41,7 +41,7 @@ def get_updates_orders(sender, instance, created, **kwargs):
         )
 
 # signal after order deleted
-@receiver(post_delete, sender=Ordering)
+@receiver(post_delete, sender=Orders)
 def get_order_after_deleting(sender, instance, **kwargs):
 
     channel_layer = get_channel_layer()

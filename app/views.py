@@ -11,15 +11,14 @@ from .serializers import (
     OrderSerializer,
 )
 from .models import (
-    Employee,
     Food,
     OrderedFood,
-    Ordering,
-    Table,
+    Orders,
 )
 
 # Logging
 import logging
+
 logger = logging.getLogger("django")
 
 
@@ -35,19 +34,15 @@ class OrderingView(APIView):
     @extend_schema(
         request=OrderRequestSerializer,
         responses={201: OrderResponseSerializer},
-        description="Create a new order with table number and list of items",
+        description="Create a new order with list of items",
     )
     def post(self, request):
         data = request.data
         logger.info("getting data from the request")
         foods = data.get("items", [])
 
-        table_number = data.get("table_number")
-        table = Table.objects.get(table_number=table_number)
-
-        order = Ordering.objects.create(
-            table_number=table,
-            name=f"order_in_table_{table_number}",
+        order = Orders.objects.create(
+            name=f"order",
             ordered_time=timezone.now(),
         )
         logger.info("creating new order")
@@ -77,22 +72,15 @@ class ChangeOrderView(APIView):
     )
     def patch(self, request, pk):
         try:
-            order = Ordering.objects.get(id=pk)
-        except Ordering.DoesNotExist:
+            order = Orders.objects.get(id=pk)
+        except Orders.DoesNotExist:
             return Response({"msg": "Order does not found"})
         ordered_foods = OrderedFood.objects.filter(order=order)
 
         data = request.data
-        table_number = data.get("table_number")
+
         items = data.get("items", [])
 
-        logger.info("getting table number")
-        try:
-            table = Table.objects.get(table_number=table_number)
-        except Table.DoesNotExist:
-            return Response({"msg": "Table does not found"})
-
-        order.table_number = table
         order.ordered_time = timezone.now()
         order.name = order.name
         # Deleting old order
@@ -115,7 +103,7 @@ class ChangeOrderView(APIView):
 class GetAllOrders(APIView):
 
     def get(self, request):
-        orders = Ordering.objects.all()
+        orders = Orders.objects.all()
         serializer = OrderSerializer(orders, many=True).data
         return Response({"data": serializer})
 
@@ -124,9 +112,9 @@ class DeleteOrderView(APIView):
 
     def delete(self, request, pk):
         try:
-            order = Ordering.objects.get(id=pk)
+            order = Orders.objects.get(id=pk)
             order.delete()
-        except Ordering.DoesNotExist:
+        except Orders.DoesNotExist:
             return Response({"msg": "No order in this id"})
 
         return Response({"msg": "Order deleted."})
