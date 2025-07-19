@@ -13,7 +13,7 @@ class OrderedFoodAdmin(admin.ModelAdmin):
 
 
 class OrderingAdmin(admin.ModelAdmin):
-    list_display = ("id", "status", "name", "cost")
+    list_display = ("id", "status", "cost")
     search_fields = ("name",)
 
 

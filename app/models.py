@@ -19,16 +19,17 @@ class Orders(models.Model):
         (DONE, DONE),
         (DELIVERED, DELIVERED),
     )
-    name = models.CharField(max_length=100, blank=True, null=True)
     cost = models.PositiveIntegerField(default=0)
     ordered_time = models.DateTimeField(blank=True, null=True)
-    location = models.CharField(max_length=255)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     status = models.CharField(
-        choices=STATUS_CHOICES, default="in_progress", max_length=50
+        choices=STATUS_CHOICES, default=IN_PROGERESS, max_length=50
     )
 
     class Meta:
-        verbose_name = "Orders"
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
 
     def __str__(self):
         return f"{self.name if self.name else ''}"

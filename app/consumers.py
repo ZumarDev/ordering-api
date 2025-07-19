@@ -1,7 +1,7 @@
 import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from .models import IN_PROGERESS
 
 class OrderConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -27,9 +27,9 @@ class OrderConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_orders(self):
-        from .models import OrderedFood, Ordering
+        from .models import OrderedFood, Orders
 
-        orders = Ordering.objects.all().exclude(status="delivered")
+        orders = Orders.objects.filter(status=IN_PROGERESS)
 
         data = []
         for order in orders:
@@ -48,9 +48,10 @@ class OrderConsumer(AsyncWebsocketConsumer):
             data.append(
                 {
                     "id": order.id,
-                    "table_number": order.table_number.table_number,
                     "total_cost": order.cost,
                     "status": order.status,
+                    "latitude": order.latitude,
+                    "longitude": order.longitude,
                     "ordered_time": order.ordered_time.strftime("%d-%m-%Y, %H:%M:%S"),
                     "foods": foods,
                 }
@@ -79,7 +80,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
         )
 
 
-class ReadyOrdersConsumer(AsyncWebsocketConsumer):
+class ReadyOrders(AsyncWebsocketConsumer):
     async def connect(self):
         self.groupname = "ready_orders"
         await self.channel_layer.group_add(self.groupname, self.channel_name)
@@ -102,16 +103,16 @@ class ReadyOrdersConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_ready_orders(self):
-        from .models import Ordering, OrderedFood
+        from .models import Orders, OrderedFood
 
-        ready_orders = Ordering.objects.filter(status="done")
+        ready_orders = Orders.objects.filter(status="done")
         data = []
         for order in ready_orders:
-            ordered_foods = []
+            foods = []
             
             foods = OrderedFood.objects.filter(order=order)
             for food in foods:
-                ordered_foods.append(
+                foods.append(
                     {
                         "id": food.food.id,
                         "name": food.food.name,
@@ -122,9 +123,11 @@ class ReadyOrdersConsumer(AsyncWebsocketConsumer):
             data.append(
                 {
                     "id": order.id,
-                    "table_number": order.table_number.table_number,
                     "total_cost": order.cost,
                     "status": order.status,
+                    "latitude": order.latitude,
+                    "longitude": order.longitude,
+                    "food": foods
                 }
             )
 

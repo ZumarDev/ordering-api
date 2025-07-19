@@ -40,12 +40,17 @@ class OrderingView(APIView):
         data = request.data
         logger.info("getting data from the request")
         foods = data.get("items", [])
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
 
         order = Orders.objects.create(
-            name=f"order",
+            latitude=latitude,
+            longitude=longitude,
             ordered_time=timezone.now(),
         )
+        
         logger.info("creating new order")
+        
         cost = 0
 
         for food_data in foods:
