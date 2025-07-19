@@ -9,7 +9,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True #os.getenv("DEBUG", "False") == "True" 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
@@ -47,7 +47,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = "user.User"
 
 CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:5173"
@@ -167,7 +167,7 @@ os.makedirs(BASE_LOG_FOLDER, exist_ok=True)
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": False,
+    "disable_existing_loggers": True,
     "formatters": {
         "standard": {
             "format": "%(asctime)s - %(levelname)s - %(message)s",
