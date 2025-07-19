@@ -14,14 +14,14 @@ class OrderConsumer(AsyncWebsocketConsumer):
 
     # getting data from the request.
     async def receive(self, text_data):
-        from .models import Ordering
+        from .models import Orders
 
         data = json.loads(text_data)
 
         id = data.get("id")
         status = data.get("status")
 
-        order = await sync_to_async(Ordering.objects.get)(id=id)
+        order = await sync_to_async(Orders.objects.get)(id=id)
         order.status = status
         await sync_to_async(order.save)()
 
@@ -90,14 +90,14 @@ class ReadyOrders(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"orders": data}))
 
     async def receive(self, text_data):
-        from .models import Ordering
+        from .models import Orders
 
         data = json.loads(text_data)
 
         id = data.get("id")
         status = data.get("status")
 
-        order = await sync_to_async(Ordering.objects.get)(id=id)
+        order = await sync_to_async(Orders.objects.get)(id=id)
         order.status = status
         await sync_to_async(order.save)()
 

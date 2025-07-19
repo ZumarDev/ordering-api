@@ -1,8 +1,8 @@
 from django.urls import path
-from . import consumers
+from .consumers import OrderConsumer, ReadyOrders
 
 
 websocket_urlpatterns = [
-    path("ws/orders/", consumers.OrderConsumer.as_asgi()),
-    path("ws/ready/orders/", consumers.ReadyOrdersConsumer.as_asgi()),
+    path("ws/orders/", OrderConsumer.as_asgi()),
+    path("ws/ready/orders/", ReadyOrders.as_asgi()),
 ]

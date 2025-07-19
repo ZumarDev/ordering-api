@@ -10,12 +10,9 @@ from .views import (
 )
 
 urlpatterns = [
-    path('order/', OrderingView.as_view()),
-    path('update/order/<str:pk>/', ChangeOrderView.as_view()), 
-    path('all/orders/', GetAllOrders.as_view()), 
-    path('delete/order/<str:pk>/', DeleteOrderView.as_view()),
-    path('foods/', MenuView.as_view()),
-    
+    path("order/food/", OrderingView.as_view()),
+    path("update/order/<str:pk>/", ChangeOrderView.as_view()),
+    path("orders/", GetAllOrders.as_view()),
+    path("delete/order/<str:pk>/", DeleteOrderView.as_view()),
+    path("foods/", MenuView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-

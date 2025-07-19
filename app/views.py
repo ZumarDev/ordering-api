@@ -48,9 +48,9 @@ class OrderingView(APIView):
             longitude=longitude,
             ordered_time=timezone.now(),
         )
-        
+
         logger.info("creating new order")
-        
+
         cost = 0
 
         for food_data in foods:
