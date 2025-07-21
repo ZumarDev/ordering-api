@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import User
 
 IN_PROGERESS, DONE, DELIVERED = "IN_PROGERESS", "DONE", "DELIVERED"
 
@@ -19,6 +20,7 @@ class Orders(models.Model):
         (DONE, DONE),
         (DELIVERED, DELIVERED),
     )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     cost = models.PositiveIntegerField(default=0)
     ordered_time = models.DateTimeField(blank=True, null=True)
     latitude = models.FloatField(null=True, blank=True)
@@ -32,7 +34,7 @@ class Orders(models.Model):
         verbose_name_plural = "Orders"
 
     def __str__(self):
-        return f"{self.name if self.name else ''}"
+        return f"{self.id}"
 
 
 class OrderedFood(models.Model):
@@ -47,6 +49,3 @@ class OrderedFood(models.Model):
         Orders, on_delete=models.CASCADE, related_name="ordered_foods"
     )
     quantity = models.PositiveSmallIntegerField()
-
-    def __str__(self):
-        return self.order.name

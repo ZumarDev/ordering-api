@@ -1,10 +1,19 @@
 import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+from user.models import Admin, Courier
 from .models import IN_PROGERESS
+
 
 class OrderConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # user = self.scope["user"] TO DO
+
+        # if not user.is_authenticated and not user.role in (Courier, Admin):
+        #     await self.close()
+        #     return
+
         self.groupname = "orders"
         await self.channel_layer.group_add(self.groupname, self.channel_name)
         await self.accept()
@@ -48,6 +57,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
             data.append(
                 {
                     "id": order.id,
+                   # "user": order.user,
                     "total_cost": order.cost,
                     "status": order.status,
                     "latitude": order.latitude,
@@ -67,7 +77,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
     async def send_order_updates(self, event):
         data = await self.get_orders()
         await self.send(text_data=json.dumps({"orders": data}))
-        
+
     # function for getting orders after deleting
     async def get_order_after_deleting(self, event):
         data = await self.get_orders()
@@ -82,6 +92,12 @@ class OrderConsumer(AsyncWebsocketConsumer):
 
 class ReadyOrders(AsyncWebsocketConsumer):
     async def connect(self):
+        # user = self.scope["user"] TO DO 
+
+        # if not user.is_authenticated and not user.role == Courier:
+        #     await self.close()
+        #     return
+
         self.groupname = "ready_orders"
         await self.channel_layer.group_add(self.groupname, self.channel_name)
         await self.accept()
@@ -109,7 +125,7 @@ class ReadyOrders(AsyncWebsocketConsumer):
         data = []
         for order in ready_orders:
             foods = []
-            
+
             foods = OrderedFood.objects.filter(order=order)
             for food in foods:
                 foods.append(
@@ -123,16 +139,17 @@ class ReadyOrders(AsyncWebsocketConsumer):
             data.append(
                 {
                     "id": order.id,
+                 #   "user": order.user,
                     "total_cost": order.cost,
                     "status": order.status,
                     "latitude": order.latitude,
                     "longitude": order.longitude,
-                    "food": foods
+                    "food": foods,
                 }
             )
 
         return data
-    
+
     # function for getting orders after changing
     async def send_order_updates(self, event):
         data = await self.get_ready_orders()

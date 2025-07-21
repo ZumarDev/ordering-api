@@ -1,7 +1,7 @@
-from dotenv import load_dotenv
+from datetime import timedelta
 from pathlib import Path
 import os
-from django.utils.timezone import datetime
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -9,7 +9,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
-DEBUG = True  # os.getenv("DEBUG", "False") == "True"
+DEBUG = True #os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
@@ -23,22 +23,35 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd party
-    
     "rest_framework",
     "drf_spectacular",
     "channels",
     "corsheaders",
     "django_celery_beat",
+    "rest_framework_simplejwt",
     # Local apps
-    
     "app",
     "user",
 ]
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
+
 
 CHANNEL_LAYERS = {
     "default": {
@@ -163,49 +176,49 @@ CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
 
 
-BASE_LOG_FOLDER = os.path.join(BASE_DIR, "logs")
-os.makedirs(BASE_LOG_FOLDER, exist_ok=True)
+# BASE_LOG_FOLDER = os.path.join(BASE_DIR, "logs")
+# os.makedirs(BASE_LOG_FOLDER, exist_ok=True)
 
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "formatters": {
-        "standard": {
-            "format": "%(asctime)s - %(levelname)s - %(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "standard",
-        },
-        "file_info": {
-            "class": "logging.handlers.TimedRotatingFileHandler",
-            "formatter": "standard",
-            "filename": os.path.join(BASE_LOG_FOLDER, "info.log"),
-            "when": "D",
-            "interval": 1,
-            "backupCount": 3,
-            "level": "INFO",
-            "encoding": "utf-8",
-        },
-        "file_error": {
-            "class": "logging.handlers.TimedRotatingFileHandler",
-            "formatter": "standard",
-            "filename": os.path.join(BASE_LOG_FOLDER, "error.log"),
-            "when": "D",
-            "interval": 1,
-            "backupCount": 3,
-            "level": "ERROR",
-            "encoding": "utf-8",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console", "file_info", "file_error"],
-            "level": "INFO",
-            "propagate": True,
-        }
-    },
-}
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": True,
+#     "formatters": {
+#         "standard": {
+#             "format": "%(asctime)s - %(levelname)s - %(message)s",
+#         },
+#     },
+#     "handlers": {
+#         "console": {
+#             "class": "logging.StreamHandler",
+#             "formatter": "standard",
+#         },
+#         "file_info": {
+#             "class": "logging.handlers.TimedRotatingFileHandler",
+#             "formatter": "standard",
+#             "filename": os.path.join(BASE_LOG_FOLDER, "info.log"),
+#             "when": "D",
+#             "interval": 1,
+#             "backupCount": 3,
+#             "level": "INFO",
+#             "encoding": "utf-8",
+#         },
+#         "file_error": {
+#             "class": "logging.handlers.TimedRotatingFileHandler",
+#             "formatter": "standard",
+#             "filename": os.path.join(BASE_LOG_FOLDER, "error.log"),
+#             "when": "D",
+#             "interval": 1,
+#             "backupCount": 3,
+#             "level": "ERROR",
+#             "encoding": "utf-8",
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["console", "file_info", "file_error"],
+#             "level": "INFO",
+#             "propagate": True,
+#         }
+#     },
+# }

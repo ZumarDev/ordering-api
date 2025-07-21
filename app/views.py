@@ -1,14 +1,15 @@
 from drf_spectacular.utils import extend_schema
 from django.utils import timezone
-from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from .serializers import (
     FoodSerializer,
     OrderRequestSerializer,
     OrderResponseSerializer,
     OrderSerializer,
+    OrderUpdateSerializer,
 )
 from .models import (
     Food,
@@ -42,8 +43,9 @@ class OrderingView(APIView):
         foods = data.get("items", [])
         latitude = data.get("latitude")
         longitude = data.get("longitude")
-
+        user = request.user
         order = Orders.objects.create(
+            user=user,
             latitude=latitude,
             longitude=longitude,
             ordered_time=timezone.now(),
@@ -54,7 +56,7 @@ class OrderingView(APIView):
         cost = 0
 
         for food_data in foods:
-            food = Food.objects.get(id=food_data["food_id"])
+            food = get_object_or_404(Food, id=food_data["food_id"])
             quantity = food_data["quantity"]
             cost += food.cost * quantity
 
@@ -69,39 +71,22 @@ class OrderingView(APIView):
         )
 
 
-class ChangeOrderView(APIView):
+class OrderUpdateView(APIView):
 
     @extend_schema(
         request=OrderRequestSerializer,
         responses={201: OrderResponseSerializer},
     )
-    def patch(self, request, pk):
+    def put(self, request, pk):
         try:
             order = Orders.objects.get(id=pk)
         except Orders.DoesNotExist:
             return Response({"msg": "Order does not found"})
-        ordered_foods = OrderedFood.objects.filter(order=order)
-
-        data = request.data
-
-        items = data.get("items", [])
-
-        order.ordered_time = timezone.now()
-        order.name = order.name
-        # Deleting old order
-        for ordered_food in ordered_foods:
-            ordered_food.delete()
-
-        cost = 0
-        # Changing order
-        for food_data in items:
-            food = Food.objects.get(id=food_data["food_id"])
-            print(food_data["food_id"])
-            quantity = food_data["quantity"]
-            cost += food.cost * quantity
-            OrderedFood.objects.create(order=order, food=food, quantity=quantity)
-        order.cost = cost
-        order.save()
+        serializer = OrderUpdateSerializer(
+            instance=order, data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response({"msg": "Order is changed"})
 
 
@@ -113,7 +98,7 @@ class GetAllOrders(APIView):
         return Response({"data": serializer})
 
 
-class DeleteOrderView(APIView):
+class OrderDeleteView(APIView):
 
     def delete(self, request, pk):
         try:

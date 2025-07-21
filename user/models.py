@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 
-Client, Courier = "Client", "Courier"
+Client, Courier, Admin = "Client", "Courier", "Admin"
 
 
 class Manager(BaseUserManager):
@@ -22,7 +22,11 @@ class Manager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    ROLES_CHOICHES = ((Courier, Courier), (Client, Client))
+    ROLES_CHOICHES = (
+        (Courier, Courier), 
+        (Client, Client),
+        (Admin, Admin)
+    )
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
